@@ -16,23 +16,23 @@ CREATE UNLOGGED TABLE studentassistants(courseofferid int , StudentRegistrationI
 
 CREATE UNLOGGED TABLE courseregistrations(courseofferid int, studentregistrationid int, grade smallint);
 
-COPY Students(studentId, StudentName, Address, BirthyearStudent, Gender) FROM '/Users/abdullahsaeed/Downloads/tables/Students.table' DELIMITER ',' CSV HEADER;
+COPY Students(studentId, StudentName, Address, BirthyearStudent, Gender) FROM '/mnt/ramdisk/tables/Students.table' DELIMITER ',' CSV HEADER;
 
-COPY courseregistrations(courseofferid, studentregistrationid, grade) FROM '/Users/abdullahsaeed/Downloads/tables/CourseRegistrations.table' DELIMITER ',' CSV HEADER NULL as 'null';
+COPY courseregistrations(courseofferid, studentregistrationid, grade) FROM '/mnt/ramdisk/tables/CourseRegistrations.table' DELIMITER ',' CSV HEADER NULL as 'null';
 
-COPY degrees(degreeId, dept, degreedescription, totalects) FROM '/Users/abdullahsaeed/Downloads/tables/Degrees.table' DELIMITER ',' CSV HEADER;
+COPY degrees(degreeId, dept, degreedescription, totalects) FROM '/mnt/ramdisk/tables/Degrees.table' DELIMITER ',' CSV HEADER;
 
-COPY StudentRegistrationsToDegrees(StudentRegistrationId, Studentid, degreeId, registrationyear) FROM '/Users/abdullahsaeed/Downloads/tables/StudentRegistrationsToDegrees.table' DELIMITER ',' CSV HEADER;
+COPY StudentRegistrationsToDegrees(StudentRegistrationId, Studentid, degreeId, registrationyear) FROM '/mnt/ramdisk/tables/StudentRegistrationsToDegrees.table' DELIMITER ',' CSV HEADER;
 
-COPY teachers(teacherid, teachername, address, birthyearteacher, gender) FROM '/Users/abdullahsaeed/Downloads/tables/Teachers.table' DELIMITER ',' CSV HEADER;
+COPY teachers(teacherid, teachername, address, birthyearteacher, gender) FROM '/mnt/ramdisk/tables/Teachers.table' DELIMITER ',' CSV HEADER;
 
-COPY courses(courseid, coursename, coursedescription, degreeid, ects) FROM '/Users/abdullahsaeed/Downloads/tables/Courses.table' DELIMITER ',' CSV HEADER;
+COPY courses(courseid, coursename, coursedescription, degreeid, ects) FROM '/mnt/ramdisk/tables/Courses.table' DELIMITER ',' CSV HEADER;
 
-COPY TeacherAssignmentsToCourses(courseofferid, teacherid) FROM '/Users/abdullahsaeed/Downloads/tables/TeacherAssignmentsToCourses.table' DELIMITER ',' CSV HEADER;
+COPY TeacherAssignmentsToCourses(courseofferid, teacherid) FROM '/mnt/ramdisk/tables/TeacherAssignmentsToCourses.table' DELIMITER ',' CSV HEADER;
 
-COPY studentassistants(courseofferid, studentregistrationid) FROM '/Users/abdullahsaeed/Downloads/tables/StudentAssistants.table' DELIMITER ',' CSV HEADER;
+COPY studentassistants(courseofferid, studentregistrationid) FROM '/mnt/ramdisk/tables/StudentAssistants.table' DELIMITER ',' CSV HEADER;
 
-COPY courseoffers(courseofferid, courseid, year, quartile) FROM '/Users/abdullahsaeed/Downloads/tables/CourseOffers.table' DELIMITER ',' CSV HEADER;
+COPY courseoffers(courseofferid, courseid, year, quartile) FROM '/mnt/ramdisk/tables/CourseOffers.table' DELIMITER ',' CSV HEADER;
 
 alter table studentassistants add primary key(courseofferid, studentregistrationid);
 
@@ -56,7 +56,6 @@ ALTER TABLE studentregistrationstodegrees ADD COLUMN gender char;
 
 alter table studentregistrationstodegrees add column totalects smallint;
 
-
 update studentregistrationstodegrees set totalects = degrees.totalects from degrees where studentregistrationstodegrees.degreeid = degrees.degreeid;
 
 alter table studentregistrationstodegrees add primary key(studentregistrationid);
@@ -64,7 +63,6 @@ alter table studentregistrationstodegrees add primary key(studentregistrationid)
 UPDATE studentregistrationstodegrees SET gender = (SELECT gender FROM students WHERE studentregistrationstodegrees.studentid = students.studentid);
 
 CREATE TABLE greaterFive AS SELECT  courseregistrations.studentregistrationid, studentid, studentregistrationstodegrees.degreeid, courseName, grade, year, quartile, ects FROM courseregistrations, studentregistrationstodegrees, courseoffers WHERE studentregistrationstodegrees.studentregistrationid = courseregistrations.studentregistrationid AND  grade >= 5 AND courseregistrations.courseofferid = courseoffers.courseofferid;
-
 
 CREATE TABLE failedcourses AS  SELECT distinct studentregistrationid FROM courseregistrations WHERE grade < 5;
 
